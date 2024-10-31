@@ -8,11 +8,9 @@ import os
 from datetime import datetime  #
 from train_object import train_utils
 def parse_args():
-    '''
-    不需要输入参数，返回一个参数解析器对象
-    '''
-    parser = argparse.ArgumentParser(description='Train')  # 创建参数解析器对象
-    # 解析器参数的定义
+
+    parser = argparse.ArgumentParser(description='Train')  
+
     # basic parameters
     parser.add_argument('--model_name', type=str, default='pretrained_vgg_CAM', help='the name of the model')
     parser.add_argument('--data_name', type=str, default='CWRU2classes', help='the name of the data')
@@ -44,36 +42,33 @@ def parse_args():
 
 
 def setlogger(path):
-    '''
-    该函数的作用是设置全局的日志记录器配置，在全局使用日志记录器时遵循该设置，不返回任何值
-    input:记录日志的文件的路径
-    '''
-    logger = logging.getLogger()  # 创建记录器，提供接口
-    logger.setLevel(logging.INFO)  # 决定日志记录的级别
-    logFormatter = logging.Formatter("%(asctime)s %(message)s", "%m-%d %H:%M:%S")  # 设置日志内容的格式,以及时间的格式
-    # 设置日志处理器
-    fileHandler = logging.FileHandler(path)  # 文件记录类型处理器
+   
+    logger = logging.getLogger()  
+    logger.setLevel(logging.INFO)  
+    logFormatter = logging.Formatter("%(asctime)s %(message)s", "%m-%d %H:%M:%S")
+   
+    fileHandler = logging.FileHandler(path) 
     fileHandler.setFormatter(logFormatter)
     logger.addHandler(fileHandler)
 
-    consoleHandler = logging.StreamHandler()  # 屏幕输出类型记录器
+    consoleHandler = logging.StreamHandler() 
     consoleHandler.setFormatter(logFormatter)
     logger.addHandler(consoleHandler)
 
 
 if __name__ == '__main__':
-    # 示例和测试
-    args = parse_args()  # 实例化参数解析器
-    os.environ['CUDA_VISIBLE_DEVICES'] = args.cuda_device.strip()  # 调用参数
-    sub_dir = args.model_name + '_' + args.data_name + '_' + datetime.strftime(datetime.now(), '%m%d-%H%M%S')  # 指定训练好的模型参数的存储路径
+
+    args = parse_args() 
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.cuda_device.strip()  
+    sub_dir = args.model_name + '_' + args.data_name + '_' + datetime.strftime(datetime.now(), '%m%d-%H%M%S')  
     save_dir = os.path.join(args.checkpoint_dir, sub_dir)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
-    setlogger(os.path.join(save_dir, 'training.log'))  # 设置日志记录器
+    setlogger(os.path.join(save_dir, 'training.log')) 
 
     for k, v in args.__dict__.items():
-        logging.info("{}: {}".format(k, v))  # 将初始化各个参数写入日志中
+        logging.info("{}: {}".format(k, v)) 
 
     trainer = train_utils(args, save_dir)
-    # 完成数据经集、网络模型、损失函数、优化器的准备工作
+    
     trainer.setup()
