@@ -16,6 +16,40 @@ from kymatio.datasets import fetch_fsdd
 from plot_utils import *
 from utils import *
 
+def expand_array(arr, target_length):
+   
+    current_length = len(arr)
+    if current_length == target_length:
+        return arr
+    else:
+      
+        repeat_factor = target_length // current_length
+        remainder = target_length % current_length
+
+
+        expanded_array = np.repeat(arr, repeat_factor)
+
+       
+        if remainder > 0:
+            expanded_array = np.concatenate((expanded_array, arr[:remainder]))
+
+        return expanded_array
+
+
+
+class Sigmoid(object):
+    
+    def __init__(self, origin_yvalue=0.001, half_xvalue=1.0):
+        self.origin_yvalue = origin_yvalue
+        self.half_xvalue = half_xvalue
+
+    def __call__(self, x):
+        x = torch.tensor(x)
+        sigma = math.exp(math.log(1 / self.origin_yvalue - 1) / self.half_xvalue) 
+        sigma = torch.tensor(sigma)
+        x = 1/(1 + torch.pow(sigma, (-x + self.half_xvalue)))  
+
+        return x
 # SCWT
 class wavelet_scaterring_analysis:
    
